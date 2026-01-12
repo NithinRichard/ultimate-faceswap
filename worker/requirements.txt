@@ -1,0 +1,11 @@
+celery
+redis
+insightface
+onnxruntime
+opencv-python
+ffmpeg-python
+numpy
+python-dotenv
+requests
+sqlalchemy
+psycopg2-binary

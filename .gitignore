@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+venv/
+.env
+.env.local
+.env.*.local
+
+# Next.js
+.next/
+out/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Worker models
+*.onnx
+models/
+inswapper_128.onnx
+
+# Local storage
+backend/storage/
+worker/temp/
