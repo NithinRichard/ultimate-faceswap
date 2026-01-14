@@ -29,10 +29,26 @@ class SwapTaskCreate(SwapTaskBase):
 class SwapTask(SwapTaskBase):
     id: int
     user_id: int
-    status: TaskStatus
-    cost: int
     result_url: Optional[str] = None
     error_message: Optional[str] = None
+    created_at: datetime
+    status: str 
+
+    class Config:
+        from_attributes = True
+
+class TemplateBase(BaseModel):
+    title: str
+    type: str
+    thumbnail: str
+    source_url: Optional[str] = None
+    cost: int
+
+class TemplateCreate(TemplateBase):
+    pass
+
+class Template(TemplateBase):
+    id: int
     created_at: datetime
 
     class Config:

@@ -56,3 +56,14 @@ class Transaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="transactions")
+
+class Template(Base):
+    __tablename__ = "templates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    type = Column(Enum(TaskType))
+    thumbnail = Column(String)
+    source_url = Column(String, nullable=True) # Actual video/image source
+    cost = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -5,7 +5,13 @@ onnxruntime
 opencv-python
 ffmpeg-python
 numpy
+insightface
+onnxruntime
+opencv-python
+celery
+redis
 python-dotenv
+requests
 requests
 sqlalchemy
 psycopg2-binary

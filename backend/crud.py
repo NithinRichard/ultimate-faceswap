@@ -52,3 +52,27 @@ def update_task_status(db: Session, task_id: int, status: TaskStatus, result_url
 
 def get_user_tasks(db: Session, user_id: int):
     return db.query(models.SwapTask).filter(models.SwapTask.user_id == user_id).all()
+
+def get_swap_task(db: Session, task_id: int):
+    return db.query(models.SwapTask).filter(models.SwapTask.id == task_id).first()
+
+def get_templates(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Template).offset(skip).limit(limit).all()
+
+def get_template(db: Session, template_id: int):
+    return db.query(models.Template).filter(models.Template.id == template_id).first()
+
+def create_template(db: Session, template: schemas.TemplateCreate):
+    # Ensure type is Enum
+    task_type = models.TaskType[template.type.upper()]
+    db_template = models.Template(
+        title=template.title,
+        type=task_type,
+        thumbnail=template.thumbnail,
+        source_url=template.source_url or template.thumbnail, # Fallback to thumbnail if no source provided (e.g. images)
+        cost=template.cost
+    )
+    db.add(db_template)
+    db.commit()
+    db.refresh(db_template)
+    return db_template

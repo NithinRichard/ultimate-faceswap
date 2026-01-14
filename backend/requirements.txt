@@ -10,3 +10,5 @@ python-dotenv
 pydantic[email]
 clerk-backend-api
 stripe
+pyjwt
+cryptography

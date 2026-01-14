@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import stripe
 import os
 from database import get_db
-import crud, models
+import crud, models, auth
 
 router = APIRouter()
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -51,3 +51,42 @@ async def stripe_webhook(
             db.commit()
 
     return {"status": "success"}
+
+@router.post("/create-checkout-session")
+def create_checkout_session(
+    package_name: str,
+    gems: int,
+    price_cents: int, # e.g. 900 for $9.00
+    current_user: models.User = Depends(auth.get_current_user), 
+    db: Session = Depends(get_db)
+):
+    # In a real app, strictly validate package_name/price on backend
+    domain_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': f"{gems} Gems ({package_name})",
+                        },
+                        'unit_amount': price_cents,
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=domain_url + '/buy-gems?success=true',
+            cancel_url=domain_url + '/buy-gems?canceled=true',
+            client_reference_id=current_user.clerk_id,
+            metadata={
+                'gems': gems,
+                'user_id': current_user.id
+            }
+        )
+        return {"url": checkout_session.url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

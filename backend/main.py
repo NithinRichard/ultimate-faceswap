@@ -12,6 +12,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Create static directory if it doesn't exist
+os.makedirs("static", exist_ok=True)
+os.makedirs("static/uploads", exist_ok=True)
+os.makedirs("static/results", exist_ok=True)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { LucideZap, LucideGrid, LucideHistory, LucideCreditCard, LucideUser } from 'lucide-react';
+import { LucideZap, LucideGrid, LucideHistory, LucideCreditCard } from 'lucide-react';
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export function Navbar() {
     return (
@@ -26,12 +27,19 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="bg-zinc-800 px-3 py-1 rounded-full text-xs font-bold text-yellow-500 border border-yellow-500/20">
-                        5 GEMS
-                    </div>
-                    <button className="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-200 transition-colors">
-                        Login
-                    </button>
+                    <SignedIn>
+                        <div className="bg-zinc-800 px-3 py-1 rounded-full text-xs font-bold text-yellow-500 border border-yellow-500/20">
+                            5 GEMS
+                        </div>
+                        <UserButton afterSignOutUrl="/" />
+                    </SignedIn>
+                    <SignedOut>
+                        <SignInButton mode="modal">
+                            <button className="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-200 transition-colors">
+                                Login
+                            </button>
+                        </SignInButton>
+                    </SignedOut>
                 </div>
             </div>
         </nav>

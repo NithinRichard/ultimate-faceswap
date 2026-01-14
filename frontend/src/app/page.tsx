@@ -1,8 +1,27 @@
-import { TEMPLATES } from "@/lib/templates";
 import Link from "next/link";
-import { LucideVideo, LucideImage, LucideArrowRight } from "lucide-react";
+import { LucideVideo, LucideImage, LucideArrowRight, LucideAlertCircle } from "lucide-react";
+import { Template } from "@/types";
 
-export default function Home() {
+async function getTemplates(): Promise<Template[]> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  try {
+    // If running server side, we might need internal container URL or localhost
+    // But NEXT_PUBLIC_API_URL usually points to external. 
+    // In dev environment with both on localhost, this is fine.
+    const res = await fetch(`${apiUrl}/templates/`, { cache: 'no-store' });
+    if (!res.ok) {
+      throw new Error('Failed to fetch templates');
+    }
+    return res.json();
+  } catch (error) {
+    console.error("Error fetching templates:", error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  const templates = await getTemplates();
+
   return (
     <div className="flex flex-col gap-16 py-12 container mx-auto px-4">
       {/* Hero Section */}
@@ -35,41 +54,47 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TEMPLATES.map((template) => (
-            <Link
-              key={template.id}
-              href={`/swap/${template.id}`}
-              className="group relative bg-zinc-900 rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all hover:scale-[1.02]"
-            >
-              <div className="aspect-[3/4] relative">
-                <img
-                  src={template.thumbnail}
-                  alt={template.title}
-                  className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+        {templates.length === 0 ? (
+          <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl">
+            <p className="text-zinc-500">No templates found. Is the backend running?</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {templates.map((template) => (
+              <Link
+                key={template.id}
+                href={`/swap/${template.id}`}
+                className="group relative bg-zinc-900 rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all hover:scale-[1.02]"
+              >
+                <div className="aspect-[3/4] relative">
+                  <img
+                    src={template.thumbnail}
+                    alt={template.title}
+                    className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
 
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider border border-white/10">
-                    {template.type === 'video' ? <LucideVideo size={12} className="text-blue-400" /> : <LucideImage size={12} className="text-green-400" />}
-                    {template.type}
+                  <div className="absolute top-3 left-3 flex gap-2">
+                    <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider border border-white/10">
+                      {template.type === 'VIDEO' ? <LucideVideo size={12} className="text-blue-400" /> : <LucideImage size={12} className="text-green-400" />}
+                      {template.type}
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-sm font-bold text-white mb-1 group-hover:translate-x-1 transition-transform">{template.title}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-400">{template.cost} Gems</span>
+                      <span className="bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded text-[10px] font-extrabold border border-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        SWAP NOW
+                      </span>
+                    </div>
                   </div>
                 </div>
-
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-sm font-bold text-white mb-1 group-hover:translate-x-1 transition-transform">{template.title}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-zinc-400">{template.cost} Gems</span>
-                    <span className="bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded text-[10px] font-extrabold border border-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                      SWAP NOW
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
