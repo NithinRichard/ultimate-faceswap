@@ -4,6 +4,11 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.v1.api import api_router
+from database import engine
+from models import Base
+
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Ultimate Faceswap API")
 
