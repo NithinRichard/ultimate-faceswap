@@ -93,11 +93,12 @@ export default function SwapPage() {
                     if (task.status === "COMPLETED") {
                         clearInterval(pollInterval);
                         setIsSwapping(false);
-                        // The backend returns a relative path like /static/results/..., we need to prepend API base if it's on a different port/domain
-                        // But since we use a proxy or direct URL, let's assume valid URL or prepend backend host
-                        // For MVP: Prepend backend URL
-                        const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-                        setResult(backendUrl + task.result_url);
+                        // Handle absolute URL (Supabase) vs relative URL (Local)
+                        const resultUrl = task.result_url.startsWith("http")
+                            ? task.result_url
+                            : (process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000") + task.result_url;
+
+                        setResult(resultUrl);
                     } else if (task.status === "FAILED") {
                         clearInterval(pollInterval);
                         setIsSwapping(false);

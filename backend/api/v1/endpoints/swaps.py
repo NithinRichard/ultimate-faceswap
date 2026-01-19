@@ -18,17 +18,25 @@ def upload_file(
     if not file.content_type.startswith("image/"):
         raise HTTPException(400, detail="Invalid file type. Only images are allowed.")
 
-    # Save file
+    # Save file to temp then upload
     file_ext = file.filename.split(".")[-1]
     filename = f"{uuid.uuid4()}.{file_ext}"
-    file_path = f"static/uploads/{filename}"
+    temp_path = f"temp_{filename}"
     
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        import storage
+        public_url = storage.upload_file(temp_path, "faceswap", f"uploads/{filename}")
         
-    # Return URL (relative or absolute, relative is easier for now)
-    # Assuming the frontend knows where the backend is hosted
-    return {"url": f"/static/uploads/{filename}"}
+        if not public_url:
+            raise HTTPException(500, detail="Failed to upload file to storage")
+            
+        return {"url": public_url}
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 @router.post("/", response_model=schemas.SwapTask)
 def create_swap(

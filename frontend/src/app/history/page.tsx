@@ -56,7 +56,12 @@ export default function HistoryPage() {
         );
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
+    const getResultUrl = (path: string | null) => {
+        if (!path) return "";
+        if (path.startsWith("http")) return path;
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
+        return backendUrl + path;
+    };
 
     return (
         <div className="container mx-auto px-4 py-12 mb-20">
@@ -83,9 +88,9 @@ export default function HistoryPage() {
                                 <div className="w-1/2 aspect-[3/4] rounded-lg overflow-hidden bg-black relative border border-yellow-500/20">
                                     {task.result_url ? (
                                         task.type === 'VIDEO' ? (
-                                            <video src={backendUrl + task.result_url} className="w-full h-full object-cover" />
+                                            <video src={getResultUrl(task.result_url)} className="w-full h-full object-cover" />
                                         ) : (
-                                            <img src={backendUrl + task.result_url} className="w-full h-full object-cover" alt="Result" />
+                                            <img src={getResultUrl(task.result_url)} className="w-full h-full object-cover" alt="Result" />
                                         )
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-zinc-800">
@@ -107,7 +112,7 @@ export default function HistoryPage() {
 
                                 {task.result_url && (
                                     <a
-                                        href={backendUrl + task.result_url}
+                                        href={getResultUrl(task.result_url)}
                                         download
                                         target="_blank"
                                         className="p-2 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors"

@@ -24,4 +24,23 @@ def add_gems(user_id=1, amount=100):
         db.close()
 
 if __name__ == "__main__":
-    add_gems()
+    import sys
+    
+    u_id = 1
+    amt = 100
+    
+    if len(sys.argv) > 1:
+        try:
+            u_id = int(sys.argv[1])
+        except ValueError:
+            print("Usage: python add_gems.py <user_id> <amount>")
+            sys.exit(1)
+            
+    if len(sys.argv) > 2:
+        try:
+            amt = int(sys.argv[2])
+        except ValueError:
+            print("Usage: python add_gems.py <user_id> <amount>")
+            sys.exit(1)
+
+    add_gems(user_id=u_id, amount=amt)

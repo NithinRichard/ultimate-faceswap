@@ -1,8 +1,35 @@
+"use client";
+
 import Link from 'next/link';
 import { LucideZap, LucideGrid, LucideHistory, LucideCreditCard } from 'lucide-react';
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
+import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '@/lib/api';
 
 export function Navbar() {
+    const { getToken, isSignedIn } = useAuth();
+    const [gems, setGems] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchGems = async () => {
+            if (!isSignedIn) return;
+            try {
+                const token = await getToken();
+                const res = await fetchWithAuth("/users/balance", token);
+                if (res.gem_balance !== undefined) {
+                    setGems(res.gem_balance);
+                }
+            } catch (error) {
+                console.error("Failed to fetch gems", error);
+            }
+        };
+
+        fetchGems();
+        // Poll every 10 seconds to keep updated (simple live update)
+        const interval = setInterval(fetchGems, 10000);
+        return () => clearInterval(interval);
+    }, [isSignedIn, getToken]);
+
     return (
         <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -29,7 +56,7 @@ export function Navbar() {
                 <div className="flex items-center gap-4">
                     <SignedIn>
                         <div className="bg-zinc-800 px-3 py-1 rounded-full text-xs font-bold text-yellow-500 border border-yellow-500/20">
-                            5 GEMS
+                            {gems !== null ? `${gems} GEMS` : "..."}
                         </div>
                         <UserButton afterSignOutUrl="/" />
                     </SignedIn>
