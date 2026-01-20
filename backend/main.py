@@ -8,7 +8,21 @@ from database import engine
 from models import Base
 
 # Create tables
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    import sys
+    error_msg = str(e)
+    if "Tenant or user not found" in error_msg:
+        print("\n" + "="*80)
+        print("CRITICAL DATABASE CONFIGURATION ERROR")
+        print("="*80)
+        print("You are using the Supavisor connection pooler (port 6543) but the username is incorrect.")
+        print("When using the pooler, the username MUST be in the format: user.project_ref")
+        print("Example: postgres.nidwhonclawjduojrntq")
+        print("\nPlease update your DATABASE_URL in Render to use the correct username.")
+        print("="*80 + "\n")
+    raise e
 
 app = FastAPI(title="Ultimate Faceswap API")
 
