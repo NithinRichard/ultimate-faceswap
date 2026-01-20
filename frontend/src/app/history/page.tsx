@@ -7,7 +7,7 @@ import { LucideClock, LucideDownload, LucideLoader2 } from "lucide-react";
 import Link from "next/link";
 
 interface SwapTask {
-    id: int;
+    id: number;
     type: string;
     template_url: string;
     result_url: string | null;
