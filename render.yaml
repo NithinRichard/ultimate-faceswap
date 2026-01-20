@@ -1,0 +1,57 @@
+services:
+  # 1. Backend API (Web Service)
+  - type: web
+    name: faceswap-backend
+    env: docker
+    plan: free # Optional, remove if upgrading
+    healthCheckPath: /api/v1/health
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false # User will provide this from Supabase
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: faceswap-redis
+          property: connectionString
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        sync: false
+
+  # 2. Celery Worker (Background Worker)
+  - type: worker
+    name: faceswap-worker
+    env: docker
+    plan: free
+    startCommand: celery -A worker.tasks.celery_app worker --loglevel=info
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: faceswap-redis
+          property: connectionString
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+
+  # 3. Redis (Message Queue)
+  - type: redis
+    name: faceswap-redis
+    plan: free
+    ipAllowList: [] # Internal access only
