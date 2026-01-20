@@ -2,6 +2,8 @@ import Link from "next/link";
 import { LucideVideo, LucideImage, LucideArrowRight, LucideAlertCircle } from "lucide-react";
 import { Template } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 async function getTemplates(): Promise<Template[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
   try {
