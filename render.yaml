@@ -31,28 +31,7 @@ services:
       - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
         sync: false
 
-  # 2. Celery Worker (Background Worker)
-  - type: worker
-    name: faceswap-worker
-    env: docker
-    # plan: free
-    dockerCommand: celery -A worker.tasks.celery_app worker --loglevel=info
-    envVars:
-      - key: DATABASE_URL
-        sync: false
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: faceswap-redis
-          property: connectionString
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
+
 
   # 3. Redis (Message Queue)
   - type: redis

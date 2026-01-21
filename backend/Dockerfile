@@ -5,6 +5,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy startup script
+COPY backend/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Start both services
+CMD ["/app/start.sh"]
