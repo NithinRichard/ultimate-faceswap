@@ -3,6 +3,7 @@ services:
   - type: web
     name: faceswap-backend
     env: docker
+    plan: free
     healthCheckPath: /api/v1/health
     envVars:
       - key: DATABASE_URL
@@ -28,4 +29,5 @@ services:
   # 2. Redis (Message Queue)
   - type: redis
     name: faceswap-redis
+    plan: free
     ipAllowList: []
