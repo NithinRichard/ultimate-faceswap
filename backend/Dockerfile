@@ -5,9 +5,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy startup script
-COPY backend/start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+# Set Python Path so worker can find backend modules, and celery can find worker
+ENV PYTHONPATH=/app:/app/backend
 
-# Start both services
-CMD ["/app/start.sh"]
+# Start both services using shell form to avoid CRLF issues with script files
+CMD sh -c "celery -A worker.tasks.celery_app worker --loglevel=info & uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"
