@@ -3,8 +3,9 @@ services:
   - type: web
     name: faceswap-backend
     env: docker
-    plan: free # Optional, remove if upgrading
-    healthCheckPath: /health # Directly on app, not api router
+    # plan: free # Removed to avoid sync errors if plan is unavailable
+    healthCheckPath: /api/v1/health # Updated to match the new endpoint
+
     initialDelaySeconds: 180 # Wait 3 minutes before checking
     healthCheckTimeout: 100 # Allow 100s for response
     numHealthCheckProbes: 10 # Try 10 times
@@ -34,7 +35,7 @@ services:
   - type: worker
     name: faceswap-worker
     env: docker
-    plan: free
+    # plan: free
     dockerCommand: celery -A worker.tasks.celery_app worker --loglevel=info
     envVars:
       - key: DATABASE_URL
@@ -56,5 +57,5 @@ services:
   # 3. Redis (Message Queue)
   - type: redis
     name: faceswap-redis
-    plan: free
+    # plan: free
     ipAllowList: [] # Internal access only
