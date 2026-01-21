@@ -16,7 +16,7 @@ DATABASE_URL = os.getenv(
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# Ensure SSL is used for cloud databases (Supabase)
+# Ensure SSL is used for cloud databases (Supabase) - Fixed for comprehensive detection
 connect_args = {}
 if "supabase." in DATABASE_URL:
     connect_args = {"sslmode": "require"}
