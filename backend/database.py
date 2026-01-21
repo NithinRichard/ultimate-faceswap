@@ -18,7 +18,7 @@ if DATABASE_URL.startswith("postgres://"):
 
 # Ensure SSL is used for cloud databases (Supabase)
 connect_args = {}
-if "supabase.co" in DATABASE_URL:
+if "supabase." in DATABASE_URL:
     connect_args = {"sslmode": "require"}
 
 engine = create_engine(
