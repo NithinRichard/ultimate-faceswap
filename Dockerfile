@@ -25,9 +25,11 @@ COPY worker/requirements.txt worker_reqs.txt
 # Merge and Install dependencies
 # We use a trick to merge unique lines or just install both.
 # Installing both is safer to ensure nothing is missed.
-RUN pip install --no-cache-dir -r backend_reqs.txt
-RUN pip install --no-cache-dir -r worker_reqs.txt
-RUN pip install supabase
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir --default-timeout=100 -r backend_reqs.txt
+RUN pip install --no-cache-dir --default-timeout=100 -r worker_reqs.txt
+RUN pip install --default-timeout=100 supabase
+
 
 # Copy Code
 # We copy the folders into the container
