@@ -3,16 +3,10 @@ services:
   - type: web
     name: faceswap-backend
     env: docker
-    # plan: free # Removed to avoid sync errors if plan is unavailable
-    healthCheckPath: /api/v1/health # Updated to match the new endpoint
-
-    initialDelaySeconds: 180 # Wait 3 minutes before checking
-    healthCheckTimeout: 100 # Allow 100s for response
-    numHealthCheckProbes: 10 # Try 10 times
-    # dockerCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT # Removed to use Dockerfile CMD (start.sh)
+    healthCheckPath: /api/v1/health
     envVars:
       - key: DATABASE_URL
-        sync: false # User will provide this from Supabase
+        sync: false
       - key: REDIS_URL
         fromService:
           type: redis
@@ -31,10 +25,7 @@ services:
       - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
         sync: false
 
-
-
-  # 3. Redis (Message Queue)
+  # 2. Redis (Message Queue)
   - type: redis
     name: faceswap-redis
-    # plan: free
-    ipAllowList: [] # Internal access only
+    ipAllowList: []
