@@ -13,7 +13,20 @@ DATABASE_URL = os.getenv(
 )
 
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=300)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# Ensure SSL is used for cloud databases (Supabase)
+connect_args = {}
+if "supabase.co" in DATABASE_URL:
+    connect_args = {"sslmode": "require"}
+
+engine = create_engine(
+    DATABASE_URL, 
+    pool_pre_ping=True, 
+    pool_recycle=300,
+    connect_args=connect_args
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
