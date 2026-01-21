@@ -51,5 +51,6 @@ async def root():
     return {"message": "Welcome to Ultimate Faceswap API"}
 
 @app.get("/health")
+@app.get("/api/v1/health")
 async def health():
     return {"status": "healthy"}
